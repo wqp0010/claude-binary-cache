@@ -1,0 +1,29 @@
+name: Update Claude Binary
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get latest version
+        id: version
+        run: |
+          VERSION=$(curl -s https://downloads.claude.ai/claude-code-releases/latest)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download Claude binary
+        run: |
+          curl -L \
+            -o claude \
+            https://downloads.claude.ai/claude-code-releases/${{ steps.version.outputs.version }}/darwin-arm64/claude
+
+          chmod +x claude
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          files: claude
