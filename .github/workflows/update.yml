@@ -14,16 +14,24 @@ jobs:
           VERSION=$(curl -s https://downloads.claude.ai/claude-code-releases/latest)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Download Claude binary
+      - name: Download macOS arm64 binary
         run: |
           curl -L \
-            -o claude \
+            -o claude-darwin-arm64 \
             https://downloads.claude.ai/claude-code-releases/${{ steps.version.outputs.version }}/darwin-arm64/claude
 
-          chmod +x claude
+          chmod +x claude-darwin-arm64
+
+      - name: Download Windows x64 binary
+        run: |
+          curl -L \
+            -o claude-windows-x64.exe \
+            https://downloads.claude.ai/claude-code-releases/${{ steps.version.outputs.version }}/windows-x64/claude.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
-          files: claude
+          files: |
+            claude-darwin-arm64
+            claude-windows-x64.exe
