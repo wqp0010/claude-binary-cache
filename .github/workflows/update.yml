@@ -14,14 +14,6 @@ jobs:
           VERSION=$(curl -s https://downloads.claude.ai/claude-code-releases/latest)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Download manifest
-        run: |
-          curl -L \
-            -o manifest.json \
-            https://downloads.claude.ai/claude-code-releases/${{ steps.version.outputs.version }}/manifest.json
-
-          cat manifest.json
-
       - name: Download macOS arm64 binary
         run: |
           curl -L \
@@ -30,15 +22,11 @@ jobs:
 
           chmod +x claude-darwin-arm64
 
-      - name: Download Windows binary
+      - name: Download Windows x64 binary
         run: |
-          WINDOWS_PATH=$(jq -r '.platforms | to_entries[] | select(.key | contains("windows")) | .key' manifest.json | head -n 1)
-
-          echo "Windows platform: $WINDOWS_PATH"
-
           curl -L \
-            -o claude-windows.exe \
-            https://downloads.claude.ai/claude-code-releases/${{ steps.version.outputs.version }}/${WINDOWS_PATH}/claude.exe
+            -o claude-windows-x64.exe \
+            https://downloads.claude.ai/claude-code-releases/${{ steps.version.outputs.version }}/win32-x64/claude.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -46,4 +34,4 @@ jobs:
           tag_name: ${{ steps.version.outputs.version }}
           files: |
             claude-darwin-arm64
-            claude-windows.exe
+            claude-windows-x64.exe
